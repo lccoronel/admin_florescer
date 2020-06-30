@@ -1,0 +1,67 @@
+import React, { useState } from 'react';
+import { FiArrowRight } from 'react-icons/fi';
+import { useHistory } from 'react-router-dom';
+
+import { Container } from './styles';
+import logoImg from '../../assets/logo.png';
+import api from '../../services/api';
+
+function SignIn() {
+  const [username, setUsername] = useState('marina@florescerbrasil.com.br');
+  const [password, setPassword] = useState('marina123');
+
+  const history = useHistory();
+
+  async function handleLogin(e) {
+    e.preventDefault();
+
+    const data = {
+      username,
+      password,
+    };
+
+    if (password.length > 0) {
+      try {
+        const response = await api.post('/auth', data);
+
+        localStorage.setItem('token', response.data.token);
+        history.push('Home');
+      } catch (err) {
+        alert('erro no login');
+      }
+    } else {
+      alert('preencha todos os dados');
+    }
+  }
+
+  return (
+    <Container>
+      <img src={logoImg} alt="Florescer Brasil" />
+      <form>
+        <p>Login do Admin Florescer</p>
+
+        <input
+          type="email"
+          placeholder="E-mail florescer"
+          value={username}
+          onChange={(value) => setUsername(value.target.value)}
+        />
+        <input
+          type="password"
+          placeholder="Senha secreta"
+          value={password}
+          onChange={(value) => setPassword(value.target.value)}
+        />
+
+        <button type="submit" onClick={handleLogin}>
+          Entrar
+          <FiArrowRight size={20} />
+        </button>
+      </form>
+      <div className="line" />
+      <a href="/">Esqueceu sua senha?</a>
+    </Container>
+  );
+}
+
+export default SignIn;

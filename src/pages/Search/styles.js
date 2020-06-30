@@ -1,0 +1,209 @@
+import styled, { css } from 'styled-components';
+import { lighten } from 'polished';
+import { Modal } from '@material-ui/core';
+
+export const Container = styled.div`
+  .group {
+    margin-top: 20px;
+    display: flex;
+    margin-bottom: 50px;
+
+    .add {
+      display: flex;
+      align-items: center;
+      border: 0;
+      background-color: #5cd15c;
+      padding: 7px 10px;
+      border-radius: 5px;
+      color: #fff;
+      font: 700 13px 'Roboto', sans-serif;
+
+      svg {
+        margin-right: 5px;
+        color: #fff;
+      }
+    }
+
+    .addAnwser {
+      margin-left: 10px;
+      display: flex;
+      align-items: center;
+      border: 0;
+      background-color: #24afff;
+      padding: 7px 10px;
+      border-radius: 5px;
+      color: #fff;
+      font: 700 13px 'Roboto', sans-serif;
+
+      svg {
+        margin-right: 5px;
+        color: #fff;
+      }
+    }
+  }
+
+  .workspace {
+    margin-top: 50px;
+
+    .list {
+      border-bottom: 0.5px solid #000;
+      padding-bottom: 25px;
+      margin-top: 10px;
+
+      .dimension {
+        display: flex;
+        align-items: center;
+
+        .name {
+          font-size: 20px;
+          margin-right: 20px;
+        }
+
+        .action {
+          margin-left: 5px;
+          border: 0;
+          background: transparent;
+
+          svg {
+            color: #999;
+          }
+        }
+
+        .status {
+          margin-left: 10px;
+          background: red;
+          border: 0;
+          padding: 0 5px;
+          border-radius: 5px;
+          color: #fff;
+          font-size: 10px;
+          height: 17px;
+
+          ${(props) =>
+            props.active === 'true'
+              ? css`
+                  background: red;
+                `
+              : css`
+                  background: #5cd15c;
+                `}
+        }
+      }
+
+      .anwsers {
+        margin-left: 20px;
+        margin-top: 15px;
+
+        .anwser {
+          display: flex;
+          margin-top: 10px;
+
+          .name {
+            font-size: 13px;
+            margin-right: 20px;
+          }
+
+          .action {
+            margin-left: 5px;
+            border: 0;
+            background: transparent;
+
+            svg {
+              color: #999;
+            }
+          }
+
+          .status {
+            margin-left: 10px;
+            background: red;
+            border: 0;
+            padding: 0 5px;
+            border-radius: 5px;
+            color: #fff;
+            font-size: 10px;
+
+            ${(props) =>
+              props.active === 'true'
+                ? css`
+                    background: red;
+                  `
+                : css`
+                    background: #5cd15c;
+                  `}
+          }
+        }
+      }
+    }
+  }
+`;
+
+export const NewRegister = styled(Modal)`
+  display: flex;
+  justify-content: center;
+
+  .containerModal {
+    width: 500px;
+    height: 250px;
+    background-color: #fff;
+    display: flex;
+    flex-direction: column;
+    border-radius: 5px;
+    margin-top: 10%;
+    padding: 15px;
+  }
+
+  .titleModal {
+    font: 600 25px Mukta, sans-serif;
+    color: #000;
+    margin: 20px 0 15px;
+  }
+
+  .line {
+    border-bottom: 5px solid #000;
+    width: 10%;
+  }
+
+  .form {
+    display: flex;
+    flex-direction: column;
+    margin-top: 35px;
+
+    input {
+      border: 0;
+      background-color: #ddd;
+      padding: 10px;
+      margin-bottom: 10px;
+      border-radius: 5px;
+
+      ::-webkit-input-placeholder {
+        color: ${lighten(0.4, '#000')};
+      }
+    }
+  }
+
+  .group {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 30px;
+
+    .back {
+      background-color: #000;
+      color: #fff;
+      font: 500 15px 'Roboto', sans-serif;
+      border-radius: 5px;
+      width: 100px;
+      height: 30px;
+      border: 0;
+    }
+
+    .send {
+      background-color: #5cd15c;
+      color: #fff;
+      border-radius: 5px;
+      width: 100px;
+      height: 30px;
+      border: 0;
+      font: 500 15px 'Roboto', sans-serif;
+    }
+  }
+`;

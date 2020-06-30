@@ -136,6 +136,9 @@ function User() {
         Authorization: `JWT ${token}`,
       },
     });
+
+    handleCloseEdit();
+    handleList();
   }
 
   return (

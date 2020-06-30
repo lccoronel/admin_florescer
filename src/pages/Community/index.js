@@ -35,7 +35,11 @@ function Community() {
     setShowEdit(true);
   };
 
-  const handleCloseEdit = () => setShowEdit(false);
+  const handleCloseEdit = () => {
+    setName('');
+    setCidade('');
+    setShowEdit(false);
+  };
 
   async function handleList() {
     try {
@@ -107,6 +111,9 @@ function Community() {
         Authorization: `JWT ${token}`,
       },
     });
+
+    handleList();
+    handleCloseEdit();
   }
 
   return (
@@ -209,7 +216,7 @@ function Community() {
               onChange={(v) => setCidade(v.target.value)}
             />
             <div className="group">
-              <button type="button" className="back" onClick={handleClose}>
+              <button type="button" className="back" onClick={handleCloseEdit}>
                 Voltar
               </button>
               <button type="submit" className="send" onClick={handleEdit}>

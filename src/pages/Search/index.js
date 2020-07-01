@@ -3,17 +3,22 @@ import { IoIosAddCircle, IoMdTrash } from 'react-icons/io';
 import { MdEdit } from 'react-icons/md';
 import { useHistory } from 'react-router-dom';
 
-import { Container, NewRegister } from './styles';
+import { Container, NewRegister, Option } from './styles';
 import Background from '../../components/Background';
 import api from '../../services/api';
+import { getDimensions } from './option';
 
 function Search() {
   const history = useHistory();
 
   // eslint-disable-next-line no-unused-vars
   const [dimensions, setDimensions] = useState([]);
+  const [listDimension, setListDimension] = useState([]);
   const [show, setShow] = useState(false);
+  const [showAnwser, setShowAnwser] = useState(false);
   const [nameDimension, setNameDimension] = useState('');
+  const [anwser, setAnwser] = useState('');
+  const [id, setId] = useState('');
 
   async function handleList() {
     try {
@@ -33,6 +38,13 @@ function Search() {
 
   useEffect(() => {
     handleList();
+
+    async function handleListDimension() {
+      const dimension = await getDimensions();
+      setListDimension(dimension);
+    }
+
+    handleListDimension();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -42,6 +54,13 @@ function Search() {
   };
 
   const handleShow = () => setShow(true);
+
+  const handleShowAnwser = () => setShowAnwser(true);
+
+  const handleCloseAnwser = () => {
+    setShowAnwser(false);
+    setAnwser('');
+  };
 
   async function handleCreateDimension() {
     const token = await localStorage.getItem('token');
@@ -68,6 +87,40 @@ function Search() {
         Authorization: `JWT ${token}`,
       },
     });
+    handleList();
+  }
+
+  const handleSelect = (select) => {
+    setId(select.value);
+  };
+
+  async function handleCreateAnwser() {
+    const token = await localStorage.getItem('token');
+
+    const data = {
+      pergunta_descricao: anwser,
+      id_dimensao: id,
+    };
+
+    await api.post('/adm_panel/pergunta/', data, {
+      headers: {
+        Authorization: `JWT ${token}`,
+      },
+    });
+
+    handleList();
+    handleCloseAnwser();
+  }
+
+  async function handleDeleteAnwser(idAnwser) {
+    const token = await localStorage.getItem('token');
+
+    await api.delete(`/adm_panel/pergunta/${idAnwser}`, {
+      headers: {
+        Authorization: `JWT ${token}`,
+      },
+    });
+    handleList();
   }
 
   return (
@@ -79,7 +132,11 @@ function Search() {
             Nova Dimensão
           </button>
 
-          <button className="addAnwser" type="button" onClick={() => {}}>
+          <button
+            className="addAnwser"
+            type="button"
+            onClick={handleShowAnwser}
+          >
             <IoIosAddCircle size={20} />
             Nova Pergunta
           </button>
@@ -89,16 +146,18 @@ function Search() {
           {dimensions.map((dimension) => (
             <div className="list" key={dimension.id}>
               <div className="dimension">
-                <p className="name">
-                  {dimension.position} - {dimension.name_dimensao}
-                </p>
+                <p className="name">{dimension.name_dimensao}</p>
 
                 <button className="action" type="button">
-                  <MdEdit size={15} />
+                  <MdEdit size={20} className="edit" />
                 </button>
 
-                <button className="action" type="button">
-                  <IoMdTrash size={15} />
+                <button
+                  className="action"
+                  type="button"
+                  onClick={() => handleDeleteDimension(dimension.id)}
+                >
+                  <IoMdTrash size={20} className="delete" />
                 </button>
 
                 <button
@@ -113,9 +172,7 @@ function Search() {
               <div className="anwsers">
                 {dimension.perguntas.map((pergunta) => (
                   <div className="anwser" key={pergunta.id}>
-                    <p className="name">
-                      {pergunta.position} - {pergunta.pergunta_descricao}
-                    </p>
+                    <p className="name">{pergunta.pergunta_descricao}</p>
 
                     <button className="action" type="button">
                       <MdEdit size={15} />
@@ -124,7 +181,7 @@ function Search() {
                     <button
                       className="action"
                       type="button"
-                      onClick={handleDeleteDimension}
+                      onClick={() => handleDeleteAnwser(pergunta.id)}
                     >
                       <IoMdTrash size={15} />
                     </button>
@@ -167,6 +224,29 @@ function Search() {
               className="send"
               onClick={handleCreateDimension}
             >
+              Concluir
+            </button>
+          </div>
+        </div>
+      </NewRegister>
+
+      <NewRegister open={showAnwser} onClose={handleCloseAnwser}>
+        <div className="containerModal">
+          <p className="titleModal">Nova Pergunta</p>
+          <div className="line" />
+          <Option options={listDimension} onChange={handleSelect} />
+          <input
+            type="text"
+            placeholder="Informe a pergunta"
+            value={anwser}
+            onChange={(v) => setAnwser(v.target.value)}
+          />
+
+          <div className="group">
+            <button type="button" className="back" onClick={handleClose}>
+              Voltar
+            </button>
+            <button type="submit" className="send" onClick={handleCreateAnwser}>
               Concluir
             </button>
           </div>

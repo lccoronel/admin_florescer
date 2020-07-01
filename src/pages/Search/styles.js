@@ -1,6 +1,7 @@
 import styled, { css } from 'styled-components';
 import { lighten } from 'polished';
 import { Modal } from '@material-ui/core';
+import Select from 'react-select';
 
 export const Container = styled.div`
   .group {
@@ -46,31 +47,42 @@ export const Container = styled.div`
     margin-top: 50px;
 
     .list {
-      border-bottom: 0.5px solid #000;
-      padding-bottom: 25px;
-      margin-top: 10px;
+      margin-top: 15px;
 
       .dimension {
-        display: flex;
-        align-items: center;
+        background: #000;
+        padding: 10px;
+        border-top-left-radius: 5px;
+        border-top-right-radius: 5px;
 
         .name {
           font-size: 20px;
           margin-right: 20px;
+          margin-bottom: 5px;
+          color: #fff;
         }
 
         .action {
-          margin-left: 5px;
           border: 0;
-          background: transparent;
+          background: #999;
+          padding: 2px 5px;
+          border-radius: 2px;
 
-          svg {
-            color: #999;
+          .edit {
+            color: #000;
+          }
+
+          .delete {
+            color: red;
+          }
+
+          & + .action {
+            margin-left: 7px;
           }
         }
 
         .status {
-          margin-left: 10px;
+          margin-left: 15px;
           background: red;
           border: 0;
           padding: 0 5px;
@@ -91,12 +103,11 @@ export const Container = styled.div`
       }
 
       .anwsers {
-        margin-left: 20px;
-        margin-top: 15px;
+        background: #ddd;
+        padding: 10px;
 
         .anwser {
           display: flex;
-          margin-top: 10px;
 
           .name {
             font-size: 13px;
@@ -143,7 +154,7 @@ export const NewRegister = styled(Modal)`
 
   .containerModal {
     width: 500px;
-    height: 250px;
+    height: 280px;
     background-color: #fff;
     display: flex;
     flex-direction: column;
@@ -181,6 +192,19 @@ export const NewRegister = styled(Modal)`
     }
   }
 
+  input {
+    border: 0;
+    background-color: #ddd;
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    margin-top: 10px;
+
+    ::-webkit-input-placeholder {
+      color: ${lighten(0.4, '#000')};
+    }
+  }
+
   .group {
     display: flex;
     justify-content: space-between;
@@ -206,4 +230,9 @@ export const NewRegister = styled(Modal)`
       font: 500 15px 'Roboto', sans-serif;
     }
   }
+`;
+
+export const Option = styled(Select)`
+  width: 1005;
+  margin-top: 10px;
 `;

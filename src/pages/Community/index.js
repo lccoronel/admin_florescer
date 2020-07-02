@@ -7,7 +7,7 @@ import { toast } from 'react-toastify';
 import { Container, NewRegister, Option } from './styles';
 import Background from '../../components/Background';
 import api from '../../services/api';
-import { listUf } from './option';
+import { listUf, getLeader } from './option';
 
 function Community() {
   const history = useHistory();
@@ -20,6 +20,8 @@ function Community() {
   const [cidade, setCidade] = useState('');
   // eslint-disable-next-line no-unused-vars
   const [id, setId] = useState('');
+  const [leader, setLeader] = useState([]);
+  const [leaderCommunity, setLeaderCommunity] = useState();
 
   const handleClose = () => {
     setName('');
@@ -50,6 +52,9 @@ function Community() {
         },
       });
 
+      const listLeader = await getLeader();
+      setLeader(listLeader);
+
       setCommunities(response.data.communitys);
     } catch (err) {
       history.push('/');
@@ -79,8 +84,8 @@ function Community() {
     }
   }
 
-  async function handleUf(select) {
-    setUf(select.value);
+  async function handleLeader(select) {
+    setLeaderCommunity(select.value);
   }
 
   async function handleCreate() {
@@ -114,9 +119,12 @@ function Community() {
     try {
       const token = await localStorage.getItem('token');
 
-      const data = {};
+      const data = {
+        id_manager: id,
+        id_community: leaderCommunity,
+      };
 
-      await api.put('/adm_panel/manager/', data, {
+      await api.put('/adm_panel/community/', data, {
         headers: {
           Authorization: `JWT ${token}`,
         },
@@ -193,7 +201,7 @@ function Community() {
               value={name}
               onChange={(v) => setName(v.target.value)}
             />
-            <Option options={listUf} onChange={handleUf} />
+            <Option options={listUf} onChange={handleLeader} />
             <input
               type="text"
               placeholder="Cidade"
@@ -218,19 +226,12 @@ function Community() {
           <div className="line" />
 
           <div className="form">
-            <input
-              type="email"
-              placeholder="Nome da comunidade"
-              value={name}
-              onChange={(v) => setName(v.target.value)}
+            <Option
+              options={leader}
+              onChange={handleLeader}
+              placeholder="Escolha um lider para a comunidade"
             />
-            <Option options={listUf} onChange={handleUf} />
-            <input
-              type="text"
-              placeholder="Cidade"
-              value={cidade}
-              onChange={(v) => setCidade(v.target.value)}
-            />
+
             <div className="group">
               <button type="button" className="back" onClick={handleCloseEdit}>
                 Voltar

@@ -1,3 +1,26 @@
+import api from '../../services/api';
+
+export async function getLeader() {
+  const token = await localStorage.getItem('token');
+
+  const response = await api.get('/adm_panel/manager/lider', {
+    headers: {
+      Authorization: `JWT ${token}`,
+    },
+  });
+
+  const { managers } = response.data;
+
+  const data = managers.map((manager) => {
+    return {
+      value: manager.id_manager,
+      label: manager.nome_user,
+    };
+  });
+
+  return data;
+}
+
 export const listUf = [
   { value: 'AC', label: 'AC' },
   { value: 'AL', label: 'AL' },

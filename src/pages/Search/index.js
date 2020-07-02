@@ -119,21 +119,39 @@ function Search() {
     handleList();
   }
 
-  // async function handleEditDimension() {
-  //   const token = await localStorage.getItem('token');
+  async function handleEditDimensionStatus(idDimension, statusDimension) {
+    const token = await localStorage.getItem('token');
 
-  //   const data = {
-  //     "id_dimensao": 1,
-  //     "name_dimensao": "Gay",
-  //     "is_activate": true
-  //   }
+    const data = {
+      id_dimensao: idDimension,
+      is_activate: !statusDimension,
+    };
 
-  //   await api.put('/adm_panel/dimensao/', data, {
-  //     headers: {
-  //       Authorization: `JWT ${token}`
-  //     }
-  //   })
-  // }
+    await api.put('/adm_panel/dimensao/', data, {
+      headers: {
+        Authorization: `JWT ${token}`,
+      },
+    });
+
+    handleList();
+  }
+
+  async function handleEditAnwserStatus(idAnwser, statusAnwser) {
+    const token = await localStorage.getItem('token');
+
+    const data = {
+      id_pergunta: idAnwser,
+      is_activate: !statusAnwser,
+    };
+
+    await api.put('/adm_panel/pergunta/', data, {
+      headers: {
+        Authorization: `JWT ${token}`,
+      },
+    });
+
+    handleList();
+  }
 
   return (
     <Background titlePage="Pesquisa">
@@ -156,7 +174,7 @@ function Search() {
 
         <div className="workspace">
           {dimensions.map((dimension) => (
-            <div className="list" key={dimension.id}>
+            <div className="list" key={dimension.id_dimensao}>
               <div className="dimension">
                 <p className="name">{dimension.name_dimensao}</p>
 
@@ -167,7 +185,7 @@ function Search() {
                 <button
                   className="action"
                   type="button"
-                  onClick={() => handleDeleteDimension(dimension.id)}
+                  onClick={() => handleDeleteDimension(dimension.id_dimensao)}
                 >
                   Excluir
                 </button>
@@ -175,20 +193,32 @@ function Search() {
                 <button
                   className="status"
                   type="button"
-                  active={dimension.is_activate ? 'true' : 'false'}
+                  onClick={() =>
+                    handleEditDimensionStatus(
+                      dimension.id_dimensao,
+                      dimension.is_activate
+                    )
+                  }
                 >
-                  Ativo
+                  {dimension.is_activate ? 'Ativo' : 'Inativo'}
                 </button>
               </div>
 
               <div className="anwsers">
                 {dimension.perguntas.map((pergunta) => (
-                  <div className="anwser" key={pergunta.id}>
+                  <div className="anwser" key={pergunta.id_pergunta}>
                     <button
                       className="status"
-                      active={pergunta.is_activate ? 'true' : 'false'}
                       type="button"
-                    />
+                      onClick={() =>
+                        handleEditAnwserStatus(
+                          pergunta.id_pergunta,
+                          pergunta.is_activate
+                        )
+                      }
+                    >
+                      {pergunta.is_activate ? 'Ativo' : 'Inativo'}
+                    </button>
 
                     <p className="name">{pergunta.pergunta_descricao}</p>
 
@@ -197,7 +227,7 @@ function Search() {
                     <button
                       className="action"
                       type="button"
-                      onClick={() => handleDeleteAnwser(pergunta.id)}
+                      onClick={() => handleDeleteAnwser(pergunta.id_pergunta)}
                     />
                   </div>
                 ))}

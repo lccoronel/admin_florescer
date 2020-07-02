@@ -50,7 +50,7 @@ export const Container = styled.div`
       margin-top: 15px;
 
       .dimension {
-        background: #000;
+        background: #ddd;
         padding: 10px;
         border-top-left-radius: 5px;
         border-top-right-radius: 5px;
@@ -59,42 +59,42 @@ export const Container = styled.div`
           font-size: 20px;
           margin-right: 20px;
           margin-bottom: 5px;
-          color: #fff;
+          color: #000;
+          font-weight: bold;
+        }
+
+        .edit {
+          background: #fdf149;
+          border: 0;
+          padding: 2px 5px;
+          border-radius: 5px;
+          font-size: 12px;
         }
 
         .action {
           border: 0;
           background: #999;
           padding: 2px 5px;
-          border-radius: 2px;
-
-          .edit {
-            color: #000;
-          }
-
-          .delete {
-            color: red;
-          }
-
-          & + .action {
-            margin-left: 7px;
-          }
+          border-radius: 5px;
+          background: #fd625e;
+          color: #fff;
+          font-size: 12px;
+          margin-left: 5px;
         }
 
         .status {
-          margin-left: 15px;
-          background: red;
+          margin-left: 5px;
+          background: #fd625e;
           border: 0;
-          padding: 0 5px;
+          padding: 2px 5px;
           border-radius: 5px;
           color: #fff;
-          font-size: 10px;
-          height: 17px;
+          font-size: 12px;
 
           ${(props) =>
             props.active === 'true'
               ? css`
-                  background: red;
+                  background: #fd625e;
                 `
               : css`
                   background: #5cd15c;
@@ -103,21 +103,41 @@ export const Container = styled.div`
       }
 
       .anwsers {
-        background: #ddd;
+        background: #ccc;
         padding: 10px;
+        border-bottom-left-radius: 5px;
+        border-bottom-right-radius: 5px;
 
         .anwser {
           display: flex;
+          align-items: center;
+
+          & + .anwser {
+            margin-top: 15px;
+          }
 
           .name {
-            font-size: 13px;
-            margin-right: 20px;
+            font-size: 15px;
+            margin-right: 40px;
+            margin-left: 10px;
+          }
+
+          .edit {
+            width: 20px;
+            height: 8px;
+            border-radius: 5px;
+            border: 0;
+            background: #fdf149;
           }
 
           .action {
-            margin-left: 5px;
+            width: 20px;
+            height: 8px;
+            border-radius: 5px;
+            margin-left: 15px;
             border: 0;
             background: transparent;
+            background: #fd625e;
 
             svg {
               color: #999;
@@ -125,10 +145,10 @@ export const Container = styled.div`
           }
 
           .status {
-            margin-left: 10px;
-            background: red;
+            background: #fd625e;
             border: 0;
-            padding: 0 5px;
+            width: 20px;
+            height: 8px;
             border-radius: 5px;
             color: #fff;
             font-size: 10px;
@@ -136,7 +156,7 @@ export const Container = styled.div`
             ${(props) =>
               props.active === 'true'
                 ? css`
-                    background: red;
+                    background: #fd625e;
                   `
                 : css`
                     background: #5cd15c;

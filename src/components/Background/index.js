@@ -5,6 +5,7 @@ import React from 'react';
 import { Container, Scroll } from './styles';
 import Main from '../Main';
 import Mobile from '../Mobile';
+import logoImg from '../../assets/logo.png';
 
 function Background(props) {
   const windowWidth = window.innerWidth;
@@ -16,7 +17,10 @@ function Background(props) {
 
       <Scroll>
         <div className="main">
-          {windowWidth < 1201 ? <Mobile /> : <></>}
+          <div className="header">
+            {windowWidth < 1201 ? <Mobile /> : <></>}
+            <img src={logoImg} alt="Florescer" />
+          </div>
           <h1 className="titlePage">{props.titlePage}</h1>
           <div className="content">{props.children}</div>
         </div>

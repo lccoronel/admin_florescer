@@ -29,6 +29,17 @@ export const Scroll = styled.div`
     position: absolute;
     height: 100vh;
 
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+
+      img {
+        width: 80px;
+        height: 40px;
+      }
+    }
+
     .titlePage {
       color: #000;
       font-size: 40px;

@@ -3,7 +3,8 @@ import React from 'react';
 import { GiHamburgerMenu } from 'react-icons/gi';
 import { AiFillHome } from 'react-icons/ai';
 import { Link, useHistory } from 'react-router-dom';
-import { GoPerson, GoOrganization, GoClippy, GoThumbsup } from 'react-icons/go';
+import { GoPerson, GoOrganization, GoClippy } from 'react-icons/go';
+import { FaHandsHelping } from 'react-icons/fa';
 
 import { Container } from './styles';
 import logoImg from '../../assets/logo.png';
@@ -67,7 +68,7 @@ function Main() {
                   type="button"
                   onClick={() => history.push('/partner')}
                 >
-                  <GoThumbsup size={20} />
+                  <FaHandsHelping size={20} />
                   <p>Parceiro</p>
                 </button>
               </div>
@@ -103,7 +104,7 @@ function Main() {
           </div>
           <div className="route">
             <Link to="/partner" className="route">
-              <GoThumbsup size={20} />
+              <FaHandsHelping size={20} />
             </Link>
           </div>
         </div>

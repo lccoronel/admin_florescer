@@ -1,6 +1,6 @@
+/* eslint-disable jsx-a11y/control-has-associated-label */
 import React, { useState, useEffect } from 'react';
-import { IoIosAddCircle, IoMdTrash } from 'react-icons/io';
-import { MdEdit } from 'react-icons/md';
+import { IoIosAddCircle } from 'react-icons/io';
 import { useHistory } from 'react-router-dom';
 
 import { Container, NewRegister, Option } from './styles';
@@ -30,6 +30,9 @@ function Search() {
         },
       });
 
+      const dimension = await getDimensions();
+      setListDimension(dimension);
+
       setDimensions(response.data.dimensao);
     } catch (err) {
       history.push('/');
@@ -38,13 +41,6 @@ function Search() {
 
   useEffect(() => {
     handleList();
-
-    async function handleListDimension() {
-      const dimension = await getDimensions();
-      setListDimension(dimension);
-    }
-
-    handleListDimension();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -123,6 +119,22 @@ function Search() {
     handleList();
   }
 
+  // async function handleEditDimension() {
+  //   const token = await localStorage.getItem('token');
+
+  //   const data = {
+  //     "id_dimensao": 1,
+  //     "name_dimensao": "Gay",
+  //     "is_activate": true
+  //   }
+
+  //   await api.put('/adm_panel/dimensao/', data, {
+  //     headers: {
+  //       Authorization: `JWT ${token}`
+  //     }
+  //   })
+  // }
+
   return (
     <Background titlePage="Pesquisa">
       <Container>
@@ -148,8 +160,8 @@ function Search() {
               <div className="dimension">
                 <p className="name">{dimension.name_dimensao}</p>
 
-                <button className="action" type="button">
-                  <MdEdit size={20} className="edit" />
+                <button className="edit" type="button">
+                  Editar
                 </button>
 
                 <button
@@ -157,7 +169,7 @@ function Search() {
                   type="button"
                   onClick={() => handleDeleteDimension(dimension.id)}
                 >
-                  <IoMdTrash size={20} className="delete" />
+                  Excluir
                 </button>
 
                 <button
@@ -172,27 +184,21 @@ function Search() {
               <div className="anwsers">
                 {dimension.perguntas.map((pergunta) => (
                   <div className="anwser" key={pergunta.id}>
+                    <button
+                      className="status"
+                      active={pergunta.is_activate ? 'true' : 'false'}
+                      type="button"
+                    />
+
                     <p className="name">{pergunta.pergunta_descricao}</p>
 
-                    <button className="action" type="button">
-                      <MdEdit size={15} />
-                    </button>
+                    <button className="edit" type="button" />
 
                     <button
                       className="action"
                       type="button"
                       onClick={() => handleDeleteAnwser(pergunta.id)}
-                    >
-                      <IoMdTrash size={15} />
-                    </button>
-
-                    <button
-                      className="status"
-                      active={pergunta.is_activate ? 'true' : 'false'}
-                      type="button"
-                    >
-                      Ativo
-                    </button>
+                    />
                   </div>
                 ))}
               </div>
@@ -234,7 +240,11 @@ function Search() {
         <div className="containerModal">
           <p className="titleModal">Nova Pergunta</p>
           <div className="line" />
-          <Option options={listDimension} onChange={handleSelect} />
+          <Option
+            options={listDimension}
+            onChange={handleSelect}
+            placeholder="Selecione uma  dimensão"
+          />
           <input
             type="text"
             placeholder="Informe a pergunta"
@@ -243,7 +253,7 @@ function Search() {
           />
 
           <div className="group">
-            <button type="button" className="back" onClick={handleClose}>
+            <button type="button" className="back" onClick={handleCloseAnwser}>
               Voltar
             </button>
             <button type="submit" className="send" onClick={handleCreateAnwser}>

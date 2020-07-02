@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { IoIosAddCircle, IoMdTrash } from 'react-icons/io';
 import { MdEdit } from 'react-icons/md';
 import { useHistory } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
 import { Container, NewRegister, Option } from './styles';
 import Background from '../../components/Background';
@@ -57,6 +58,7 @@ function User() {
       setUsers(response.data.managers);
     } catch (err) {
       history.push('/');
+      toast.error('Sessão expirada');
     }
   }
 
@@ -82,8 +84,9 @@ function User() {
       });
 
       handleList();
+      toast.success('Usuário deletado');
     } catch (err) {
-      alert('nao foi possivel excluir o cliente');
+      toast.error('Usuário não pode ser deletado');
     }
   }
 
@@ -106,10 +109,11 @@ function User() {
         },
       });
 
+      toast.success('Usuário cadastrado');
       handleList();
       handleClose();
     } else {
-      alert('as senhas nao estao iguais');
+      toast.error('Usuário não cadastrado, confirme os dados e tente novmente');
     }
   }
 
@@ -122,23 +126,29 @@ function User() {
   }
 
   async function handleEdit(idUser) {
-    const token = await localStorage.getItem('token');
+    try {
+      const token = await localStorage.getItem('token');
 
-    const data = {
-      id_manager: idUser,
-      username,
-      phone,
-      acess_type: accessType,
-    };
+      const data = {
+        id_manager: idUser,
+        username,
+        phone,
+        acess_type: accessType,
+      };
 
-    await api.put('/adm_panel/manager/', data, {
-      headers: {
-        Authorization: `JWT ${token}`,
-      },
-    });
+      await api.put('/adm_panel/manager/', data, {
+        headers: {
+          Authorization: `JWT ${token}`,
+        },
+      });
 
-    handleCloseEdit();
-    handleList();
+      handleCloseEdit();
+      handleList();
+      toast.success('Usuário editado');
+    } catch (err) {
+      handleCloseEdit();
+      toast.error('Usuário não pode ser editado');
+    }
   }
 
   return (

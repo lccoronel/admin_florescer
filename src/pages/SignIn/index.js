@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { FiArrowRight } from 'react-icons/fi';
 import { useHistory } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
 import { Container } from './styles';
 import logoImg from '../../assets/logo.png';
@@ -27,10 +28,12 @@ function SignIn() {
         localStorage.setItem('token', response.data.token);
         history.push('Home');
       } catch (err) {
-        alert('erro no login');
+        toast.error(
+          'Falha na autenticação, verifique seus dados e tente novamente'
+        );
       }
     } else {
-      alert('preencha todos os dados');
+      toast.error('Preencha os dados para fazer login');
     }
   }
 

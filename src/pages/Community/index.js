@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { IoIosAddCircle, IoMdTrash } from 'react-icons/io';
 import { MdEdit } from 'react-icons/md';
 import { useHistory } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
 import { Container, NewRegister, Option } from './styles';
 import Background from '../../components/Background';
@@ -25,7 +26,6 @@ function Community() {
     setCidade('');
     setShow(false);
   };
-
   const handleShow = () => setShow(true);
   const handleShowEdit = (idCommunity, nome, estado, city) => {
     setId(idCommunity);
@@ -34,7 +34,6 @@ function Community() {
     setCidade(city);
     setShowEdit(true);
   };
-
   const handleCloseEdit = () => {
     setName('');
     setCidade('');
@@ -54,6 +53,7 @@ function Community() {
       setCommunities(response.data.communitys);
     } catch (err) {
       history.push('/');
+      toast.error('Sessão expirada');
     }
   }
 
@@ -73,8 +73,9 @@ function Community() {
       });
 
       handleList();
+      toast.success('Comunidade deletada');
     } catch (err) {
-      alert('nao foi possivel excluir o cliente');
+      toast.error('Comunidade não pode ser deletada');
     }
   }
 
@@ -83,37 +84,52 @@ function Community() {
   }
 
   async function handleCreate() {
-    const token = await localStorage.getItem('token');
+    try {
+      const token = await localStorage.getItem('token');
 
-    const data = {
-      name_community: name,
-      uf,
-      cidade,
-    };
+      const data = {
+        name_community: name,
+        uf,
+        cidade,
+      };
 
-    await api.post('/adm_panel/community/', data, {
-      headers: {
-        Authorization: `JWT ${token}`,
-      },
-    });
+      await api.post('/adm_panel/community/', data, {
+        headers: {
+          Authorization: `JWT ${token}`,
+        },
+      });
 
-    handleList();
-    handleClose();
+      toast.success('Comunidade cadastrado');
+      handleList();
+      handleClose();
+    } catch (err) {
+      toast.error(
+        'Comunidade não cadastrado, confirme os dados e tente novmente'
+      );
+      handleClose();
+    }
   }
 
   async function handleEdit() {
-    const token = await localStorage.getItem('token');
+    try {
+      const token = await localStorage.getItem('token');
 
-    const data = {};
+      const data = {};
 
-    await api.put('/adm_panel/manager/', data, {
-      headers: {
-        Authorization: `JWT ${token}`,
-      },
-    });
+      await api.put('/adm_panel/manager/', data, {
+        headers: {
+          Authorization: `JWT ${token}`,
+        },
+      });
 
-    handleList();
-    handleCloseEdit();
+      toast.success('Comunidade editada');
+      handleList();
+      handleCloseEdit();
+    } catch (err) {
+      toast.error(
+        'Erro ao editar comunidade, confira os dados e tente novamente'
+      );
+    }
   }
 
   return (

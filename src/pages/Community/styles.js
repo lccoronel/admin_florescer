@@ -69,7 +69,7 @@ export const NewRegister = styled(Modal)`
 
   .containerModal {
     width: 500px;
-    height: 330px;
+    height: 400px;
     background-color: #fff;
     display: flex;
     flex-direction: column;

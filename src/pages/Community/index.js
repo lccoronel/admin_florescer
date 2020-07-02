@@ -96,6 +96,7 @@ function Community() {
         name_community: name,
         uf,
         cidade,
+        id_community: leaderCommunity,
       };
 
       await api.post('/adm_panel/community/', data, {
@@ -207,6 +208,11 @@ function Community() {
               placeholder="Cidade"
               value={cidade}
               onChange={(v) => setCidade(v.target.value)}
+            />
+            <Option
+              options={leader}
+              onChange={handleLeader}
+              placeholder="Escolha um lider para a comunidade"
             />
             <div className="group">
               <button type="button" className="back" onClick={handleClose}>

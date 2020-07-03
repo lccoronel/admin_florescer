@@ -47,6 +47,10 @@ export const Container = styled.div`
         width: 15%;
       }
 
+      .community {
+        width: 15%;
+      }
+
       .actions {
         display: flex;
         flex-direction: row;

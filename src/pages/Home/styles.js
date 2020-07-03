@@ -26,9 +26,11 @@ export const Container = styled.div`
         border-top-left-radius: 5px;
         border-top-right-radius: 5px;
         width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
 
         p {
-          text-align: center;
           font-weight: bold;
         }
       }

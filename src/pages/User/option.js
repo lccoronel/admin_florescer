@@ -3,7 +3,7 @@ import api from '../../services/api';
 export async function getCommunity() {
   const token = await localStorage.getItem('token');
 
-  const response = await api.get('/adm_panel/community/', {
+  const response = await api.get('/adm_panel/community/lider/', {
     headers: {
       Authorization: `JWT ${token}`,
     },

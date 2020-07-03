@@ -35,11 +35,11 @@ function User() {
   };
   const handleShow = () => setShow(true);
 
-  const handleShowEdit = (idUser, username, phone, accessType) => {
+  const handleShowEdit = (idUser, name, numberPhone, access) => {
     setId(idUser);
-    setUsername(username);
-    setPhone(phone);
-    setAccessType(accessType);
+    setUsername(name);
+    setPhone(numberPhone);
+    setAccessType(access);
     setShowEdit(true);
   };
 
@@ -237,8 +237,16 @@ function User() {
               value={confirmPassword}
               onChange={(resposta) => setConfirmPassword(resposta.target.value)}
             />
-            <Option options={communities} onChange={handleCommunity} />
-            <Option options={typeAccess} onChange={handleAccess} />
+            <Option
+              options={communities}
+              onChange={handleCommunity}
+              placeholder="Comunidade"
+            />
+            <Option
+              options={typeAccess}
+              onChange={handleAccess}
+              placeholder="Tipo de acesso"
+            />
             <div className="group">
               <button type="button" className="back" onClick={handleClose}>
                 Voltar

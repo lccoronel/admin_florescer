@@ -8,8 +8,8 @@ import logoImg from '../../assets/logo.png';
 import api from '../../services/api';
 
 function SignIn() {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
+  const [username, setUsername] = useState('marina@florescerbrasil.com.br');
+  const [password, setPassword] = useState('marina123');
 
   const history = useHistory();
 

@@ -31,7 +31,7 @@ export const Container = styled.div`
       align-items: center;
 
       &:nth-child(odd) {
-        background-color: ${lighten(0.29, '#999')};
+        background-color: #eee;
       }
 
       .column {
@@ -50,6 +50,10 @@ export const Container = styled.div`
       }
 
       .type {
+        width: 15%;
+      }
+
+      .community {
         width: 15%;
       }
 

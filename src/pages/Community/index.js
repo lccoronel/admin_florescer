@@ -52,9 +52,6 @@ function Community() {
         },
       });
 
-      const listLeader = await getLeader();
-      setLeader(listLeader);
-
       setCommunities(response.data.communitys);
     } catch (err) {
       history.push('/');
@@ -64,6 +61,13 @@ function Community() {
 
   useEffect(() => {
     handleList();
+
+    async function Leaders() {
+      const listLeader = await getLeader();
+      setLeader(listLeader);
+    }
+
+    Leaders();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -88,6 +92,10 @@ function Community() {
     setLeaderCommunity(select.value);
   }
 
+  async function handleUf(select) {
+    setUf(select.value);
+  }
+
   async function handleCreate() {
     try {
       const token = await localStorage.getItem('token');
@@ -96,7 +104,7 @@ function Community() {
         name_community: name,
         uf,
         cidade,
-        id_community: leaderCommunity,
+        id_manager: leaderCommunity,
       };
 
       await api.post('/adm_panel/community/', data, {
@@ -112,7 +120,6 @@ function Community() {
       toast.error(
         'Comunidade não cadastrado, confirme os dados e tente novmente'
       );
-      handleClose();
     }
   }
 
@@ -121,8 +128,8 @@ function Community() {
       const token = await localStorage.getItem('token');
 
       const data = {
-        id_manager: id,
-        id_community: leaderCommunity,
+        id_manager: leaderCommunity,
+        id_community: id,
       };
 
       await api.put('/adm_panel/community/', data, {
@@ -202,7 +209,11 @@ function Community() {
               value={name}
               onChange={(v) => setName(v.target.value)}
             />
-            <Option options={listUf} onChange={handleLeader} />
+            <Option
+              options={listUf}
+              onChange={handleUf}
+              placeholder="Escolha o estado"
+            />
             <input
               type="text"
               placeholder="Cidade"

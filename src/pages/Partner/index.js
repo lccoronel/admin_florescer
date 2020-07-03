@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { IoIosAddCircle, IoMdTrash } from 'react-icons/io';
 import { useHistory } from 'react-router-dom';
 import { MdEdit } from 'react-icons/md';
+import { toast } from 'react-toastify';
 
 import { Container, NewRegister, Option } from './styles';
 import Background from '../../components/Background';
@@ -79,6 +80,7 @@ function Partner() {
       setPartners(response.data.partners);
     } catch (err) {
       history.push('/');
+      toast.error('Sessão expirada');
     }
   }
 
@@ -113,10 +115,11 @@ function Partner() {
         },
       });
 
+      toast.success('Parceiro criado');
       handleClose();
       handleList();
     } else {
-      alert('preencha todos os dados corretamente');
+      toast.error('Preencha todos os dados corretamente');
     }
   }
 
@@ -129,29 +132,35 @@ function Partner() {
       },
     });
 
+    toast.success('Parceiro deletado');
     handleList();
   }
 
   async function handleEdit() {
-    const token = await localStorage.getItem('token');
+    try {
+      const token = await localStorage.getItem('token');
 
-    const data = {
-      id_partner: id,
-      username,
-      phone,
-      uf,
-      cidade: city,
-      site,
-    };
+      const data = {
+        id_partner: id,
+        username,
+        phone,
+        uf,
+        cidade: city,
+        site,
+      };
 
-    await api.put('/adm_panel/partner/', data, {
-      headers: {
-        Authorization: `JWT ${token}`,
-      },
-    });
+      await api.put('/adm_panel/partner/', data, {
+        headers: {
+          Authorization: `JWT ${token}`,
+        },
+      });
 
-    handleCloseEdit();
-    handleList();
+      toast.success('Parceiro Editado');
+      handleCloseEdit();
+      handleList();
+    } catch (err) {
+      toast.error('Erro ao editar parceiro');
+    }
   }
 
   return (

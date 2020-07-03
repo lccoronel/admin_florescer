@@ -3,7 +3,7 @@ import api from '../../services/api';
 export async function getLeader() {
   const token = await localStorage.getItem('token');
 
-  const response = await api.get('/adm_panel/manager/lider', {
+  const response = await api.get('/adm_panel/manager/lider/', {
     headers: {
       Authorization: `JWT ${token}`,
     },

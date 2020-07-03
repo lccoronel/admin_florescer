@@ -18,7 +18,7 @@ function Search() {
   const [showAnwser, setShowAnwser] = useState(false);
   const [nameDimension, setNameDimension] = useState('');
   const [anwser, setAnwser] = useState('');
-  const [id, setId] = useState('');
+  const [id, setId] = useState();
 
   async function handleList() {
     try {
@@ -97,6 +97,9 @@ function Search() {
       pergunta_descricao: anwser,
       id_dimensao: id,
     };
+
+    console.log(data);
+    console.log(listDimension);
 
     await api.post('/adm_panel/pergunta/', data, {
       headers: {

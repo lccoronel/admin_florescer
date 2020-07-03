@@ -13,7 +13,7 @@ export async function getDimensions() {
 
   const dimensions = data.map((dimension) => {
     return {
-      value: dimension.id,
+      value: dimension.id_dimensao,
       label: dimension.name_dimensao,
     };
   });

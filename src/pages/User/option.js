@@ -20,8 +20,3 @@ export async function getCommunity() {
 
   return communities;
 }
-
-export const typeAccess = [
-  { value: 'Lider Comunidade', label: 'Lider Comunidade' },
-  { value: 'Administrador', label: 'Administrador' },
-];

@@ -5,11 +5,11 @@ import { toast } from 'react-toastify';
 
 import { Container } from './styles';
 import logoImg from '../../assets/logo.png';
-import api from '../../services/api';
+import { handleSession } from './services';
 
 function SignIn() {
-  const [username, setUsername] = useState('marina@florescerbrasil.com.br');
-  const [password, setPassword] = useState('marina123');
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
 
   const history = useHistory();
 
@@ -22,16 +22,8 @@ function SignIn() {
     };
 
     if (password.length > 0) {
-      try {
-        const response = await api.post('/auth', data);
-
-        localStorage.setItem('token', response.data.token);
-        history.push('Home');
-      } catch (err) {
-        toast.error(
-          'Falha na autenticação, verifique seus dados e tente novamente'
-        );
-      }
+      const response = await handleSession(data);
+      if (response) history.push('Home');
     } else {
       toast.error('Preencha os dados para fazer login');
     }
@@ -40,7 +32,7 @@ function SignIn() {
   return (
     <Container>
       <img src={logoImg} alt="Florescer Brasil" />
-      <form>
+      <form onSubmit={handleLogin}>
         <p>Login do Admin Florescer</p>
 
         <input

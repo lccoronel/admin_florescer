@@ -1,17 +1,19 @@
 import React, { useState, useEffect } from 'react';
-import { IoIosAddCircle, IoMdTrash } from 'react-icons/io';
-import { MdEdit } from 'react-icons/md';
-import { useHistory } from 'react-router-dom';
+import { IoIosAddCircle } from 'react-icons/io';
 import { toast } from 'react-toastify';
 
-import { Container, NewRegister, Option } from './styles';
+import { Container, NewRegister, Option, Actions } from './styles';
 import Background from '../../components/Background';
 import api from '../../services/api';
-import { listUf, getLeader } from './option';
+import { listUf } from './option';
+import {
+  getCommunities,
+  createCommunity,
+  deleteCommunity,
+  getLeader,
+} from './services';
 
 function Community() {
-  const history = useHistory();
-
   const [show, setShow] = useState(false);
   const [showEdit, setShowEdit] = useState(false);
   const [communities, setCommunities] = useState([]);
@@ -22,13 +24,8 @@ function Community() {
   const [id, setId] = useState('');
   const [leader, setLeader] = useState([]);
   const [leaderCommunity, setLeaderCommunity] = useState();
+  const [showDelete, setShowDelete] = useState(false);
 
-  const handleClose = () => {
-    setName('');
-    setCidade('');
-    setShow(false);
-  };
-  const handleShow = () => setShow(true);
   const handleShowEdit = (idCommunity, nome, estado, city) => {
     setId(idCommunity);
     setName(nome);
@@ -43,20 +40,8 @@ function Community() {
   };
 
   async function handleList() {
-    try {
-      const token = await localStorage.getItem('token');
-
-      const response = await api.get('/adm_panel/community/', {
-        headers: {
-          Authorization: `JWT ${token}`,
-        },
-      });
-
-      setCommunities(response.data.communitys);
-    } catch (err) {
-      history.push('/');
-      toast.error('Sessão expirada');
-    }
+    const response = await getCommunities();
+    setCommunities(response);
   }
 
   useEffect(() => {
@@ -68,23 +53,45 @@ function Community() {
     }
 
     Leaders();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  async function handleDelete(idCommunity) {
-    try {
-      const token = await localStorage.getItem('token');
+  const handleClose = () => {
+    setName('');
+    setCidade('');
+    setShow(false);
+  };
 
-      await api.delete(`/adm_panel/community/${idCommunity}`, {
-        headers: {
-          Authorization: `JWT ${token}`,
-        },
-      });
+  const handleShow = () => setShow(true);
 
+  async function handleCreate() {
+    const data = {
+      name_community: name,
+      uf,
+      cidade,
+      id_manager: leaderCommunity,
+    };
+
+    const response = await createCommunity(data);
+
+    if (response) {
       handleList();
-      toast.success('Comunidade deletada');
-    } catch (err) {
-      toast.error('Comunidade não pode ser deletada');
+      handleClose();
+    }
+  }
+
+  const handleDeleteClose = () => setShowDelete(false);
+
+  const handleDeleteShow = (idCommunity) => {
+    setId(idCommunity);
+    setShowDelete(true);
+  };
+
+  async function handleDelete(idCommunity) {
+    const response = await deleteCommunity(idCommunity);
+
+    if (response) {
+      handleList();
+      handleDeleteClose();
     }
   }
 
@@ -94,33 +101,6 @@ function Community() {
 
   async function handleUf(select) {
     setUf(select.value);
-  }
-
-  async function handleCreate() {
-    try {
-      const token = await localStorage.getItem('token');
-
-      const data = {
-        name_community: name,
-        uf,
-        cidade,
-        id_manager: leaderCommunity,
-      };
-
-      await api.post('/adm_panel/community/', data, {
-        headers: {
-          Authorization: `JWT ${token}`,
-        },
-      });
-
-      toast.success('Comunidade cadastrado');
-      handleList();
-      handleClose();
-    } catch (err) {
-      toast.error(
-        'Comunidade não cadastrado, confirme os dados e tente novmente'
-      );
-    }
   }
 
   async function handleEdit() {
@@ -159,26 +139,26 @@ function Community() {
         <div className="workspace">
           {communities.map((community) => (
             <div className="list" key={community.id_community}>
-              <p className="name">{community.name_community}</p>
+              <div className="containerItem">
+                <p className="name">{community.name_community}</p>
+                <p className="city">
+                  {community.cidade} - {community.uf}
+                </p>
+                <p className="community">
+                  Lider: {community.lider_community.name_lider_community}
+                </p>
+              </div>
 
-              <p className="uf">{community.uf}</p>
-
-              <p className="city">{community.cidade}</p>
-
-              <p className="community">
-                {community.lider_community.name_lider_community}
-              </p>
-
-              <div className="actions">
+              <div className="row">
                 <button
-                  className="action"
-                  onClick={() => handleDelete(community.id_community)}
+                  className="delete"
+                  onClick={() => handleDeleteShow(community.id_community)}
                   type="button"
                 >
-                  <IoMdTrash size={20} />
+                  Excluir
                 </button>
                 <button
-                  className="action"
+                  className="edit"
                   onClick={() =>
                     handleShowEdit(
                       community.id_community,
@@ -189,7 +169,7 @@ function Community() {
                   }
                   type="button"
                 >
-                  <MdEdit size={20} />
+                  Editar
                 </button>
               </div>
             </div>
@@ -239,7 +219,7 @@ function Community() {
 
       <NewRegister open={showEdit} onClose={handleCloseEdit}>
         <div className="containerModal">
-          <p className="titleModal">Editar Usuário</p>
+          <p className="titleModal">Editar UsuÃ¡rio</p>
           <div className="line" />
 
           <div className="form">
@@ -260,6 +240,26 @@ function Community() {
           </div>
         </div>
       </NewRegister>
+
+      <Actions open={showDelete} onClose={handleDeleteClose}>
+        <div className="containerModal">
+          <p className="titleModal">Excluir Comunidade</p>
+          <div className="line" />
+          <p>Realmente deseja excluir esta comunidade ?</p>
+          <div className="group">
+            <button type="button" className="back" onClick={handleDeleteClose}>
+              Não
+            </button>
+            <button
+              type="button"
+              className="send"
+              onClick={() => handleDelete(id)}
+            >
+              Sim
+            </button>
+          </div>
+        </div>
+      </Actions>
     </Background>
   );
 }

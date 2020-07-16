@@ -1,18 +1,21 @@
 import React, { useState, useEffect } from 'react';
-import { IoIosAddCircle, IoMdTrash } from 'react-icons/io';
-import { MdEdit } from 'react-icons/md';
-import { useHistory } from 'react-router-dom';
+import { IoIosAddCircle } from 'react-icons/io';
 import { toast } from 'react-toastify';
 
-import { Container, NewRegister, Option } from './styles';
+import { Container, NewRegister, Option, Actions } from './styles';
 import Background from '../../components/Background';
-import api from '../../services/api';
-import { getCommunity, typeAccess } from './option';
+import { getCommunity } from './option';
+import {
+  getList,
+  createLeaderCommunity,
+  deleteUser,
+  createAdmin,
+  editUser,
+} from './service';
 
 function User() {
-  const history = useHistory();
-
   const [show, setShow] = useState(false);
+  const [showAdmin, setShowAdmin] = useState(false);
   const [showEdit, setShowEdit] = useState(false);
   const [id, setId] = useState();
   const [users, setUsers] = useState([]);
@@ -21,11 +24,26 @@ function User() {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [phone, setPhone] = useState('');
-  const [accessType, setAccessType] = useState('');
   const [communities, setCommunities] = useState([]);
   const [community, setCommunity] = useState();
+  const [showDelete, setShowDelete] = useState(false);
 
-  const handleClose = () => {
+  async function handleList() {
+    const response = await getList();
+    setUsers(response);
+  }
+
+  useEffect(() => {
+    async function getCommunities() {
+      const response = await getCommunity();
+      setCommunities(response);
+    }
+
+    handleList();
+    getCommunities();
+  }, []);
+
+  const closeModal = () => {
     setShow(false);
     setUsername('');
     setFirstName('');
@@ -33,131 +51,121 @@ function User() {
     setConfirmPassword('');
     setPhone('');
   };
-  const handleShow = () => setShow(true);
 
-  const handleShowEdit = (idUser, name, numberPhone, access) => {
-    setId(idUser);
-    setUsername(name);
-    setPhone(numberPhone);
-    setAccessType(access);
-    setShowEdit(true);
-  };
-
-  const handleCloseEdit = () => setShowEdit(false);
-
-  async function handleList() {
-    try {
-      const token = await localStorage.getItem('token');
-
-      const response = await api.get('/adm_panel/manager/', {
-        headers: {
-          Authorization: `JWT ${token}`,
-        },
-      });
-
-      setUsers(response.data.managers);
-    } catch (err) {
-      history.push('/');
-      toast.error('Sessão expirada');
-    }
-  }
-
-  async function getCommunities() {
-    const response = await getCommunity();
-    setCommunities(response);
-  }
-
-  useEffect(() => {
-    handleList();
-    getCommunities();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  async function handleDelete(idUser) {
-    try {
-      const token = await localStorage.getItem('token');
-
-      await api.delete(`/adm_panel/manager/${idUser}`, {
-        headers: {
-          Authorization: `JWT ${token}`,
-        },
-      });
-
-      handleList();
-      toast.success('Usuário deletado');
-    } catch (err) {
-      toast.error('Usuário não pode ser deletado');
-    }
-  }
+  const openModal = () => setShow(true);
 
   async function handleCreate() {
     if (password === confirmPassword) {
-      const token = await localStorage.getItem('token');
-
       const data = {
         username,
         first_name: firstName,
         password,
         phone,
-        acess_type: accessType,
+        access_type: 2,
         id_community: community,
       };
 
-      await api.post('/adm_panel/manager/', data, {
-        headers: {
-          Authorization: `JWT ${token}`,
-        },
-      });
+      const response = await createLeaderCommunity(data);
 
-      toast.success('Usuário cadastrado');
-      handleList();
-      handleClose();
+      if (response) {
+        handleList();
+        closeModal();
+      }
     } else {
-      toast.error('Usuário não cadastrado, confirme os dados e tente novmente');
+      toast.error('Usuário não cadastrado, as senhas não são iguais');
     }
+  }
+
+  const closeModalAdmin = () => {
+    setShowAdmin(false);
+    setUsername('');
+    setFirstName('');
+    setPassword('');
+    setConfirmPassword('');
+    setPhone('');
+  };
+
+  const openModalAdmin = () => setShowAdmin(true);
+
+  async function handleCreateAdmin() {
+    if (password === confirmPassword) {
+      const data = {
+        username,
+        first_name: firstName,
+        password,
+        phone,
+        access_type: 1,
+      };
+
+      const response = await createAdmin(data);
+
+      if (response) {
+        handleList();
+        closeModalAdmin();
+      }
+    } else {
+      toast.error('As senhas não são iguais');
+    }
+  }
+
+  const closeDeleteModal = () => setShowDelete(false);
+
+  const openDeleteModal = (idUser) => {
+    setId(idUser);
+    setShowDelete(true);
+  };
+
+  async function handleDelete(idUser) {
+    await deleteUser(idUser);
+    handleList();
+    closeDeleteModal();
   }
 
   async function handleCommunity(select) {
     setCommunity(select.value);
   }
 
-  async function handleAccess(select) {
-    setAccessType(select.value);
-  }
+  const handleShowEdit = (idUser, name, numberPhone) => {
+    setId(idUser);
+    setUsername(name);
+    setPhone(numberPhone);
+    setShowEdit(true);
+  };
+
+  const handleCloseEdit = () => {
+    setShowEdit(false);
+    setUsername('');
+    setPhone('');
+  };
 
   async function handleEdit(idUser) {
-    try {
-      const token = await localStorage.getItem('token');
+    const data = {
+      id_manager: idUser,
+      username,
+      phone,
+    };
 
-      const data = {
-        id_manager: idUser,
-        username,
-        phone,
-        acess_type: accessType,
-      };
+    const response = await editUser(data);
 
-      await api.put('/adm_panel/manager/', data, {
-        headers: {
-          Authorization: `JWT ${token}`,
-        },
-      });
-
+    if (response) {
       handleCloseEdit();
       handleList();
-      toast.success('Usuário editado');
-    } catch (err) {
-      handleCloseEdit();
-      toast.error('Usuário não pode ser editado');
     }
   }
 
   return (
     <Background titlePage="Usuários">
       <Container>
-        <button className="add" type="button" onClick={handleShow}>
-          <IoIosAddCircle size={20} />
-          Novo Usuário
-        </button>
+        <div className="row">
+          <button className="add" type="button" onClick={openModal}>
+            <IoIosAddCircle size={20} />
+            Novo Lider de comunidade
+          </button>
+          <button className="add" type="button" onClick={openModalAdmin}>
+            <IoIosAddCircle size={20} />
+            Novo Administrador
+          </button>
+        </div>
 
         <div className="workspace">
           {users.map((user) => (
@@ -167,22 +175,25 @@ function User() {
                 <p className="email">{user.email}</p>
               </div>
 
-              <p className="phone">{user.phone}</p>
-
-              <p className="type">{user.acess_type}</p>
-
-              <p className="community">{user.community}</p>
+              <div className="subColumn">
+                <p>Telefone: {user.phone}</p>
+                <p>
+                  Acesso:
+                  {user.accesstype === 1
+                    ? 'Administrador'
+                    : 'Lider de comunidade'}
+                </p>
+                <p>{user.community}</p>
+              </div>
 
               <div className="actions">
                 <button
-                  className="action"
-                  onClick={() => handleDelete(user.id_manager)}
                   type="button"
+                  onClick={() => openDeleteModal(user.id_manager)}
                 >
-                  <IoMdTrash size={20} />
+                  Excluir
                 </button>
                 <button
-                  className="action"
                   onClick={() =>
                     handleShowEdit(
                       user.id_manager,
@@ -193,7 +204,7 @@ function User() {
                   }
                   type="button"
                 >
-                  <MdEdit size={20} />
+                  Editar
                 </button>
               </div>
             </div>
@@ -201,9 +212,9 @@ function User() {
         </div>
       </Container>
 
-      <NewRegister open={show} onClose={handleClose}>
+      <NewRegister open={show}>
         <div className="containerModal">
-          <p className="titleModal">Novo Usuário</p>
+          <p className="titleModal">Novo Lider de comunidade</p>
           <div className="line" />
 
           <div className="form">
@@ -242,13 +253,8 @@ function User() {
               onChange={handleCommunity}
               placeholder="Comunidade"
             />
-            <Option
-              options={typeAccess}
-              onChange={handleAccess}
-              placeholder="Tipo de acesso"
-            />
             <div className="group">
-              <button type="button" className="back" onClick={handleClose}>
+              <button type="button" className="back" onClick={closeModal}>
                 Voltar
               </button>
               <button type="submit" className="send" onClick={handleCreate}>
@@ -258,7 +264,58 @@ function User() {
           </div>
         </div>
       </NewRegister>
-      <NewRegister open={showEdit} onClose={handleCloseEdit}>
+      <NewRegister open={showAdmin}>
+        <div className="containerModal">
+          <p className="titleModal">Novo Administrador</p>
+          <div className="line" />
+
+          <div className="form">
+            <input
+              type="email"
+              placeholder="Email"
+              value={username}
+              onChange={(resposta) => setUsername(resposta.target.value)}
+            />
+            <input
+              type="text"
+              placeholder="Nome"
+              value={firstName}
+              onChange={(resposta) => setFirstName(resposta.target.value)}
+            />
+            <input
+              type="text"
+              placeholder="Telefone"
+              value={phone}
+              onChange={(resposta) => setPhone(resposta.target.value)}
+            />
+            <input
+              type="password"
+              placeholder="Senha"
+              value={password}
+              onChange={(resposta) => setPassword(resposta.target.value)}
+            />
+            <input
+              type="password"
+              placeholder="Confirmar senha"
+              value={confirmPassword}
+              onChange={(resposta) => setConfirmPassword(resposta.target.value)}
+            />
+            <div className="group">
+              <button type="button" className="back" onClick={closeModalAdmin}>
+                Voltar
+              </button>
+              <button
+                type="submit"
+                className="send"
+                onClick={handleCreateAdmin}
+              >
+                Concluir
+              </button>
+            </div>
+          </div>
+        </div>
+      </NewRegister>
+      <NewRegister open={showEdit}>
         <div className="containerModal">
           <p className="titleModal">Editar Usuário</p>
           <div className="line" />
@@ -276,7 +333,6 @@ function User() {
               value={phone}
               onChange={(resposta) => setPhone(resposta.target.value)}
             />
-            <Option options={communities} onChange={handleCommunity} />
             <div className="group">
               <button type="button" className="back" onClick={handleCloseEdit}>
                 Voltar
@@ -292,6 +348,26 @@ function User() {
           </div>
         </div>
       </NewRegister>
+
+      <Actions open={showDelete}>
+        <div className="containerModal">
+          <p className="titleModal">Excluir Usuário</p>
+          <div className="line" />
+          <p>Realmente deseja excluir este usuário ?</p>
+          <div className="group">
+            <button type="button" className="back" onClick={closeDeleteModal}>
+              Não
+            </button>
+            <button
+              type="button"
+              className="send"
+              onClick={() => handleDelete(id)}
+            >
+              Sim
+            </button>
+          </div>
+        </div>
+      </Actions>
     </Background>
   );
 }

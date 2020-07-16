@@ -22,20 +22,17 @@ export const Container = styled.div`
 
   .workspace {
     margin-top: 50px;
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    grid-gap: 5px;
 
     .list {
-      padding: 10px;
-      border-radius: 5px;
-      display: flex;
-      flex-direction: row;
-      align-items: center;
-
-      &:nth-child(odd) {
-        background-color: #ddd;
-      }
-
       .column {
-        width: 17%;
+        background-color: #ddd;
+        padding: 5px;
+        border-top-left-radius: 5px;
+        border-top-right-radius: 5px;
+
         .name {
           font-weight: bold;
         }
@@ -45,38 +42,45 @@ export const Container = styled.div`
         }
       }
 
-      .type {
-        width: 6%;
-      }
+      .subColumn {
+        background-color: #eee;
+        padding: 5px;
+        height: 130px;
 
-      .city {
-        width: 15%;
-      }
-
-      .phone {
-        width: 10%;
-      }
-
-      .site {
-        width: 15%;
-      }
-
-      .segmento {
-        width: 7%;
+        p {
+          margin-top: 5px;
+        }
       }
 
       .actions {
         display: flex;
         flex-direction: row;
 
-        .action {
-          background: transparent;
+        button {
+          background-color: #ff4747;
+          font-weight: 300;
+          width: 50%;
+          border-top-left-radius: 0;
+          border-top-right-radius: 0;
+          border-bottom-right-radius: 0;
 
-          svg {
+          & + button {
+            background-color: #ddd;
             color: #000;
+            border-bottom-right-radius: 5px;
+            border-bottom-left-radius: 0;
           }
         }
       }
+    }
+  }
+
+  @media screen and (max-width: 600px) {
+    .workspace {
+      margin-top: 30px;
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      grid-gap: 5px;
     }
   }
 `;
@@ -157,4 +161,59 @@ export const NewRegister = styled(Modal)`
 export const Option = styled(Select)`
   width: 1005;
   margin-bottom: 10px;
+`;
+
+export const Actions = styled(Modal)`
+  display: flex;
+  justify-content: center;
+
+  .containerModal {
+    width: 500px;
+    height: 200px;
+    background-color: #fff;
+    display: flex;
+    flex-direction: column;
+    border-radius: 5px;
+    margin-top: 10%;
+    padding: 15px;
+  }
+
+  .titleModal {
+    font: 600 25px Mukta, sans-serif;
+    color: #000;
+    margin: 20px 0 15px;
+  }
+
+  .line {
+    border-bottom: 5px solid #000;
+    width: 10%;
+  }
+  p {
+    margin-top: 15px;
+  }
+  .group {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 30px;
+
+    .back {
+      background-color: #000;
+      color: #fff;
+      font: 500 15px 'Roboto', sans-serif;
+      border-radius: 5px;
+      width: 100px;
+      height: 30px;
+      border: 0;
+    }
+
+    .send {
+      background-color: red;
+      color: #fff;
+      border-radius: 5px;
+      width: 100px;
+      height: 30px;
+      border: 0;
+      font: 500 15px 'Roboto', sans-serif;
+    }
+  }
 `;

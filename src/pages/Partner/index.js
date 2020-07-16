@@ -1,17 +1,18 @@
 import React, { useState, useEffect } from 'react';
-import { IoIosAddCircle, IoMdTrash } from 'react-icons/io';
-import { useHistory } from 'react-router-dom';
-import { MdEdit } from 'react-icons/md';
+import { IoIosAddCircle } from 'react-icons/io';
 import { toast } from 'react-toastify';
 
-import { Container, NewRegister, Option } from './styles';
+import { Container, NewRegister, Option, Actions } from './styles';
 import Background from '../../components/Background';
-import api from '../../services/api';
 import { listUf } from '../Community/option';
+import {
+  getPartners,
+  createPartner,
+  deletePArtner,
+  EditPatner,
+} from './service';
 
 function Partner() {
-  const history = useHistory();
-
   const [show, setShow] = useState(false);
   const [showEdit, setShowEdit] = useState(false);
   const [partners, setPartners] = useState([]);
@@ -26,6 +27,20 @@ function Partner() {
   const [site, setSite] = useState('');
   const [segmento, setSegmento] = useState('');
   const [id, setId] = useState();
+  const [showDelete, setShowDelete] = useState(false);
+
+  async function handleList() {
+    const response = await getPartners();
+    setPartners(response);
+  }
+
+  useEffect(() => {
+    handleList();
+  }, []);
+
+  async function handleUf(select) {
+    setUf(select.value);
+  }
 
   const handleClose = () => {
     setUsername('');
@@ -41,7 +56,49 @@ function Partner() {
     setSegmento('');
     setShow(false);
   };
+
   const handleShow = () => setShow(true);
+
+  async function handleCreate() {
+    if (password === confirmPassword && password.length > 0) {
+      const data = {
+        username,
+        first_name: firstName,
+        password,
+        phone,
+        tipo: type,
+        uf,
+        cidade: city,
+        site,
+        segmento,
+      };
+
+      const response = await createPartner(data);
+
+      if (response) {
+        handleClose();
+        handleList();
+      }
+    } else {
+      toast.error('Preencha todos os dados corretamente');
+    }
+  }
+
+  const handleDeleteClose = () => setShowDelete(false);
+
+  const handleDeleteShow = (idPartner) => {
+    setId(idPartner);
+    setShowDelete(true);
+  };
+
+  async function handleDelete(idPartner) {
+    const response = await deletePArtner(idPartner);
+
+    if (response) {
+      handleList();
+      handleDeleteClose();
+    }
+  }
 
   const handleCloseEdit = () => {
     setUsername('');
@@ -57,6 +114,7 @@ function Partner() {
     setSegmento('');
     setShowEdit(false);
   };
+
   const handleShowEdit = (idPartner, nome, telefone, estado, cidade, www) => {
     setId(idPartner);
     setUsername(nome);
@@ -67,99 +125,21 @@ function Partner() {
     setShowEdit(true);
   };
 
-  async function handleList() {
-    try {
-      const token = await localStorage.getItem('token');
-
-      const response = await api.get('/adm_panel/partner/', {
-        headers: {
-          Authorization: `JWT ${token}`,
-        },
-      });
-
-      setPartners(response.data.partners);
-    } catch (err) {
-      history.push('/');
-      toast.error('Sessão expirada');
-    }
-  }
-
-  useEffect(() => {
-    handleList();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  async function handleUf(select) {
-    setUf(select.value);
-  }
-
-  async function handleCreate() {
-    if (password === confirmPassword && password.length > 0) {
-      const token = await localStorage.getItem('token');
-
-      const data = {
-        username,
-        first_name: firstName,
-        password,
-        phone,
-        tipo: type,
-        uf,
-        cidade: city,
-        site,
-        segmento,
-      };
-
-      await api.post('/adm_panel/partner/', data, {
-        headers: {
-          Authorization: `JWT ${token}`,
-        },
-      });
-
-      toast.success('Parceiro criado');
-      handleClose();
-      handleList();
-    } else {
-      toast.error('Preencha todos os dados corretamente');
-    }
-  }
-
-  async function handleDelete(idPartner) {
-    const token = await localStorage.getItem('token');
-
-    await api.delete(`/adm_panel/partner/${idPartner}`, {
-      headers: {
-        Authorization: `JWT ${token}`,
-      },
-    });
-
-    toast.success('Parceiro deletado');
-    handleList();
-  }
-
   async function handleEdit() {
-    try {
-      const token = await localStorage.getItem('token');
+    const data = {
+      id_partner: id,
+      username,
+      phone,
+      uf,
+      cidade: city,
+      site,
+    };
 
-      const data = {
-        id_partner: id,
-        username,
-        phone,
-        uf,
-        cidade: city,
-        site,
-      };
+    const response = await EditPatner(data);
 
-      await api.put('/adm_panel/partner/', data, {
-        headers: {
-          Authorization: `JWT ${token}`,
-        },
-      });
-
-      toast.success('Parceiro Editado');
+    if (response) {
       handleCloseEdit();
       handleList();
-    } catch (err) {
-      toast.error('Erro ao editar parceiro');
     }
   }
 
@@ -179,24 +159,24 @@ function Partner() {
                 <p className="email">{partner.email}</p>
               </div>
 
-              <p className="type">{partner.tipo}</p>
-              <p className="city">
-                {partner.cidade} / {partner.uf}
-              </p>
-              <p className="phone">{partner.phone}</p>
-              <p className="site">{partner.site}</p>
-              <p className="segmento">{partner.segmento}</p>
+              <div className="subColumn">
+                <p className="type">{partner.tipo}</p>
+                <p className="city">
+                  {partner.cidade} / {partner.uf}
+                </p>
+                <p className="phone">{partner.phone}</p>
+                <p className="site">{partner.site}</p>
+                <p className="segmento">{partner.segmento}</p>
+              </div>
 
               <div className="actions">
                 <button
-                  className="action"
                   type="button"
-                  onClick={() => handleDelete(partner.id_partner)}
+                  onClick={() => handleDeleteShow(partner.id_partner)}
                 >
-                  <IoMdTrash size={20} />
+                  Excluir
                 </button>
                 <button
-                  className="action"
                   type="button"
                   onClick={() =>
                     handleShowEdit(
@@ -209,7 +189,7 @@ function Partner() {
                     )
                   }
                 >
-                  <MdEdit size={20} />
+                  Editar
                 </button>
               </div>
             </div>
@@ -307,7 +287,7 @@ function Partner() {
               value={phone}
               onChange={(v) => setPhone(v.target.value)}
             />
-            <Option options={listUf} onChange={handleUf} />
+            <Option options={listUf} onChange={handleUf} placeholder={uf} />
             <input
               type="text"
               placeholder="Cidade"
@@ -331,6 +311,25 @@ function Partner() {
           </div>
         </div>
       </NewRegister>
+      <Actions open={showDelete} onClose={handleDeleteClose}>
+        <div className="containerModal">
+          <p className="titleModal">Excluir Parceiro</p>
+          <div className="line" />
+          <p>Realmente deseja excluir este parceiro ?</p>
+          <div className="group">
+            <button type="button" className="back" onClick={handleDeleteClose}>
+              Não
+            </button>
+            <button
+              type="button"
+              className="send"
+              onClick={() => handleDelete(id)}
+            >
+              Sim
+            </button>
+          </div>
+        </div>
+      </Actions>
     </Background>
   );
 }

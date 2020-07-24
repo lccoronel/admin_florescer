@@ -7,6 +7,7 @@ export async function handleSession(data) {
 
     toast.success('Login realizado');
     localStorage.setItem('token', response.data.access);
+    localStorage.setItem('user', response.data.name);
 
     return true;
   } catch (err) {

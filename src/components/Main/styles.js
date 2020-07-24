@@ -52,7 +52,7 @@ export const Container = styled.div`
             width: 75%;
             height: 60px;
             margin-bottom: 30px;
-            margin-left: 30px;
+            align-self: center;
           }
 
           .user {
@@ -72,8 +72,8 @@ export const Container = styled.div`
           }
 
           .nameUser {
-            margin-left: 55px;
             margin-top: 15px;
+            text-align: center;
             font: 600 20px Mukta, sans-serif;
           }
 
@@ -107,10 +107,19 @@ export const Container = styled.div`
               margin-left: 20px;
             }
 
+            .out {
+              color: red;
+              margin-left: 20px;
+            }
+
             p {
               margin-left: 15px;
               color: #010101;
               font-size: 18px;
+            }
+
+            .outText {
+              color: red;
             }
           }
         }
@@ -151,6 +160,10 @@ export const Container = styled.div`
           &:hover {
             color: #000;
           }
+        }
+
+        .out {
+          color: red;
         }
 
         & + .route {

@@ -7,6 +7,8 @@ import User from './pages/User';
 import Community from './pages/Community';
 import Search from './pages/Search';
 import Partner from './pages/Partner';
+import Recovery from './pages/Recovery';
+import NewPassword from './pages/NewPassword';
 
 export default function Routes() {
   return (
@@ -18,6 +20,8 @@ export default function Routes() {
         <Route path="/community" component={Community} />
         <Route path="/search" component={Search} />
         <Route path="/partner" component={Partner} />
+        <Route path="/recovery" component={Recovery} />
+        <Route path="/password/:email" component={NewPassword} />
       </Switch>
     </BrowserRouter>
   );

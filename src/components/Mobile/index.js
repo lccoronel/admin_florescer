@@ -1,15 +1,31 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { GiHamburgerMenu } from 'react-icons/gi';
 import { AiFillHome } from 'react-icons/ai';
 import { useHistory } from 'react-router-dom';
 import { GoPerson, GoOrganization, GoClippy } from 'react-icons/go';
 import { FaHandsHelping } from 'react-icons/fa';
+import { RiLogoutBoxLine } from 'react-icons/ri';
 
 import { Container } from './styles';
 import logoImg from '../../assets/logo.png';
 
 function Mobile() {
   const history = useHistory();
+
+  const [user, setUser] = useState('');
+
+  useEffect(() => {
+    async function getUser() {
+      setUser(await localStorage.getItem('user'));
+    }
+
+    getUser();
+  }, []);
+
+  async function logout() {
+    await localStorage.removeItem('token');
+    history.push('/');
+  }
 
   return (
     <Container>
@@ -22,9 +38,9 @@ function Mobile() {
         <nav>
           <img src={logoImg} alt="Biso" />
           <div className="user">
-            <p className="wordUser">L</p>
+            <p className="wordUser">{user.substring(0, 1)}</p>
           </div>
-          <p className="nameUser">Lucas coronel</p>
+          <p className="nameUser">{user}</p>
 
           <div className="optionBar">
             <button
@@ -67,6 +83,10 @@ function Mobile() {
             >
               <FaHandsHelping size={20} />
               <p>Parceiro</p>
+            </button>
+            <button className="routesBar" type="button" onClick={logout}>
+              <RiLogoutBoxLine size={20} className="out" />
+              <p className="outText">Sair</p>
             </button>
           </div>
         </nav>

@@ -4,7 +4,6 @@ import { IoIosAddCircle } from 'react-icons/io';
 
 import { Container, NewRegister, Option } from './styles';
 import Background from '../../components/Background';
-import api from '../../services/api';
 import {
   getList,
   getDimensions,

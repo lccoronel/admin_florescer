@@ -99,7 +99,7 @@ function Main() {
 
       <div className="routes">
         <div className="user">
-          <p className="wordUser">L</p>
+          <p className="wordUser">{user.substring(0, 1)}</p>
         </div>
         <div className="option">
           <div className="route">

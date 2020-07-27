@@ -1,47 +1,46 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import React, { useState, useEffect } from 'react';
 import { IoIosAddCircle } from 'react-icons/io';
-import { useHistory } from 'react-router-dom';
 
 import { Container, NewRegister, Option } from './styles';
 import Background from '../../components/Background';
 import api from '../../services/api';
-import { getDimensions } from './option';
+import {
+  getList,
+  getDimensions,
+  createDimensao,
+  deleteDimension,
+  createAnwser,
+  deleteAnwser,
+  editDimension,
+  editDimensionStatus,
+  editAnwser,
+  editAnwserStatus,
+} from './service';
 
 function Search() {
-  const history = useHistory();
-
-  // eslint-disable-next-line no-unused-vars
   const [dimensions, setDimensions] = useState([]);
   const [listDimension, setListDimension] = useState([]);
   const [show, setShow] = useState(false);
   const [showAnwser, setShowAnwser] = useState(false);
+  const [showEditDimension, setShowEditDimension] = useState(false);
+  const [showEditAnwser, setShowEditAnwser] = useState(false);
   const [nameDimension, setNameDimension] = useState('');
   const [anwser, setAnwser] = useState('');
   const [id, setId] = useState();
+  const [idDimensao, setIdDimensao] = useState();
+  const [idAnwser, setIdAnwser] = useState();
 
   async function handleList() {
-    try {
-      const token = await localStorage.getItem('token');
+    const response = await getList();
+    setDimensions(response.dimensao);
 
-      const response = await api.get('/adm_panel/dimensao/', {
-        headers: {
-          Authorization: `JWT ${token}`,
-        },
-      });
-
-      const dimension = await getDimensions();
-      setListDimension(dimension);
-
-      setDimensions(response.data.dimensao);
-    } catch (err) {
-      history.push('/');
-    }
+    const dimension = await getDimensions();
+    setListDimension(dimension);
   }
 
   useEffect(() => {
     handleList();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleClose = () => {
@@ -51,6 +50,25 @@ function Search() {
 
   const handleShow = () => setShow(true);
 
+  async function handleCreateDimension() {
+    const data = {
+      name_dimensao: nameDimension,
+    };
+
+    const response = await createDimensao(data);
+
+    if (response) {
+      handleList();
+      handleClose();
+    }
+  }
+
+  async function handleDeleteDimension(idDimension) {
+    const response = await deleteDimension(idDimension);
+
+    if (response) handleList();
+  }
+
   const handleShowAnwser = () => setShowAnwser(true);
 
   const handleCloseAnwser = () => {
@@ -58,102 +76,100 @@ function Search() {
     setAnwser('');
   };
 
-  async function handleCreateDimension() {
-    const token = await localStorage.getItem('token');
-
-    const data = {
-      name_dimensao: nameDimension,
-    };
-
-    await api.post('/adm_panel/dimensao/', data, {
-      headers: {
-        Authorization: `JWT ${token}`,
-      },
-    });
-
-    handleList();
-    handleClose();
-  }
-
-  async function handleDeleteDimension(idDimension) {
-    const token = await localStorage.getItem('token');
-
-    await api.delete(`/adm_panel/dimensao/${idDimension}`, {
-      headers: {
-        Authorization: `JWT ${token}`,
-      },
-    });
-    handleList();
-  }
-
   const handleSelect = (select) => {
     setId(select.value);
   };
 
   async function handleCreateAnwser() {
-    const token = await localStorage.getItem('token');
-
     const data = {
       pergunta_descricao: anwser,
       id_dimensao: id,
     };
 
-    console.log(data);
-    console.log(listDimension);
+    const response = await createAnwser(data);
 
-    await api.post('/adm_panel/pergunta/', data, {
-      headers: {
-        Authorization: `JWT ${token}`,
-      },
-    });
-
-    handleList();
-    handleCloseAnwser();
+    if (response) {
+      handleList();
+      handleCloseAnwser();
+    }
   }
 
   async function handleDeleteAnwser(idAnwser) {
-    const token = await localStorage.getItem('token');
+    const response = await deleteAnwser(idAnwser);
 
-    await api.delete(`/adm_panel/pergunta/${idAnwser}`, {
-      headers: {
-        Authorization: `JWT ${token}`,
-      },
-    });
-    handleList();
+    if (response) handleList();
+  }
+
+  const handleEditModalDimensionOpen = (nome, idDimension) => {
+    setShowEditDimension(true);
+    setNameDimension(nome);
+    setIdDimensao(idDimension);
+  };
+
+  const handleEditModalDimensionClose = () => {
+    setShowEditDimension(false);
+    setNameDimension('');
+  };
+
+  async function handleEditDimension() {
+    const data = {
+      id_dimensao: idDimensao,
+      name_dimensao: nameDimension,
+    };
+
+    const response = await editDimension(data);
+
+    if (response) {
+      handleList();
+      handleEditModalDimensionClose();
+    }
   }
 
   async function handleEditDimensionStatus(idDimension, statusDimension) {
-    const token = await localStorage.getItem('token');
-
     const data = {
       id_dimensao: idDimension,
       is_activate: !statusDimension,
     };
 
-    await api.put('/adm_panel/dimensao/', data, {
-      headers: {
-        Authorization: `JWT ${token}`,
-      },
-    });
+    const response = await editDimensionStatus(data);
 
-    handleList();
+    if (response) handleList();
   }
 
-  async function handleEditAnwserStatus(idAnwser, statusAnwser) {
-    const token = await localStorage.getItem('token');
+  const handleEditModalAnwserOpen = (nome, idAwnser) => {
+    setShowEditAnwser(true);
+    setAnwser(nome);
+    setIdAnwser(idAwnser);
+  };
 
+  const handleEditModalAnwserClose = () => {
+    setShowEditAnwser(false);
+    setNameDimension('');
+  };
+
+  async function handleEditAnwser() {
     const data = {
       id_pergunta: idAnwser,
+      pergunta_descricao: anwser,
+    };
+
+    const response = await editAnwser(data);
+
+    if (response) {
+      handleList();
+      handleEditModalAnwserClose();
+    }
+  }
+
+  async function handleEditAnwserStatus(idPergunta, statusAnwser) {
+    const data = {
+      id_pergunta: idPergunta,
       is_activate: !statusAnwser,
     };
 
-    await api.put('/adm_panel/pergunta/', data, {
-      headers: {
-        Authorization: `JWT ${token}`,
-      },
-    });
+    const response = await editAnwserStatus(data);
 
-    handleList();
+    if (response) handleList();
   }
 
   return (
@@ -181,7 +197,16 @@ function Search() {
               <div className="dimension">
                 <p className="name">{dimension.name_dimensao}</p>
 
-                <button className="edit" type="button">
+                <button
+                  className="edit"
+                  type="button"
+                  onClick={() =>
+                    handleEditModalDimensionOpen(
+                      dimension.name_dimensao,
+                      dimension.id_dimensao
+                    )
+                  }
+                >
                   Editar
                 </button>
 
@@ -225,7 +250,16 @@ function Search() {
 
                     <p className="name">{pergunta.pergunta_descricao}</p>
 
-                    <button className="edit" type="button" />
+                    <button
+                      className="edit"
+                      type="button"
+                      onClick={() =>
+                        handleEditModalAnwserOpen(
+                          pergunta.pergunta_descricao,
+                          pergunta.id_pergunta
+                        )
+                      }
+                    />
 
                     <button
                       className="action"
@@ -290,6 +324,67 @@ function Search() {
               Voltar
             </button>
             <button type="submit" className="send" onClick={handleCreateAnwser}>
+              Concluir
+            </button>
+          </div>
+        </div>
+      </NewRegister>
+
+      <NewRegister
+        open={showEditDimension}
+        onClose={handleEditModalDimensionClose}
+      >
+        <div className="containerModal">
+          <p className="titleModal">Editar dimensão</p>
+          <div className="line" />
+
+          <input
+            type="text"
+            placeholder="Nome da dimensão"
+            value={nameDimension}
+            onChange={(v) => setNameDimension(v.target.value)}
+          />
+
+          <div className="group">
+            <button
+              type="button"
+              className="back"
+              onClick={handleEditModalDimensionClose}
+            >
+              Voltar
+            </button>
+            <button
+              type="submit"
+              className="send"
+              onClick={handleEditDimension}
+            >
+              Concluir
+            </button>
+          </div>
+        </div>
+      </NewRegister>
+
+      <NewRegister open={showEditAnwser} onClose={handleEditModalAnwserClose}>
+        <div className="containerModal">
+          <p className="titleModal">Editar pergunta</p>
+          <div className="line" />
+
+          <input
+            type="text"
+            placeholder="Informe a pergunta"
+            value={anwser}
+            onChange={(v) => setAnwser(v.target.value)}
+          />
+
+          <div className="group">
+            <button
+              type="button"
+              className="back"
+              onClick={handleEditModalAnwserClose}
+            >
+              Voltar
+            </button>
+            <button type="submit" className="send" onClick={handleEditAnwser}>
               Concluir
             </button>
           </div>

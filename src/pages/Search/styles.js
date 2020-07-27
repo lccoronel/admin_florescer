@@ -1,4 +1,4 @@
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 import { lighten } from 'polished';
 import { Modal } from '@material-ui/core';
 import Select from 'react-select';
@@ -78,6 +78,15 @@ export const Container = styled.div`
           border-radius: 5px;
           color: #fff;
           font-size: 12px;
+
+          ${(props) =>
+            props.active === 'Ativo'
+              ? css`
+                  color: green;
+                `
+              : css`
+                  color: black;
+                `}
         }
       }
       .anwsers {

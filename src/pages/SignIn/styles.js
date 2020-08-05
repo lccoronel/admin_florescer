@@ -11,8 +11,8 @@ export const Container = styled.div`
   align-items: center;
 
   img {
-    width: 180px;
-    height: 100px;
+    width: 280px;
+    height: 200px;
   }
 
   form {

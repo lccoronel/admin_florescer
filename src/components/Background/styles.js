@@ -35,8 +35,8 @@ export const Scroll = styled.div`
       justify-content: space-between;
 
       img {
-        width: 80px;
-        height: 40px;
+        width: 120px;
+        height: 80px;
       }
     }
 
